@@ -72,6 +72,7 @@
 
 #define AT25_MANUFACTURER         0x1F
 #define AT25_AT25DF321_TYPE       0x47 /* 32 M-bit */
+#define AT25_AT25F512_TYPE        0x65 /* 0.5 M-bit */
 
 /*  AT25DF321 capacity is 4,194,304 bytes:
  *  (64 sectors) * (65,536 bytes per sector)
@@ -82,6 +83,11 @@
 #define AT25_AT25DF321_NSECTORS      1024
 #define AT25_AT25DF321_PAGE_SHIFT    9     /* Page size 1 << 9 = 512 */
 #define AT25_AT25DF321_NPAGES        8192
+
+#define AT25_AT25F512_SECTOR_SHIFT  12    /* Sector size 1 << 12 = 4096 */
+#define AT25_AT25F512_NSECTORS      128
+#define AT25_AT25F512_PAGE_SHIFT    8     /* Page size 1 << 8 = 256 */
+#define AT25_AT25F512_NPAGES        2048
 
 /* Instructions */
 /*      Command        Value      N Description             Addr Dummy Data */
@@ -242,6 +248,15 @@ static inline int at25_readid(struct at25_dev_s *priv)
         priv->nsectors    = AT25_AT25DF321_NSECTORS;
         priv->pageshift   = AT25_AT25DF321_PAGE_SHIFT;
         priv->npages      = AT25_AT25DF321_NPAGES;
+        return OK;
+    }
+
+  if (manufacturer == AT25_MANUFACTURER && memory == AT25_AT25F512_TYPE)
+    {
+        priv->sectorshift = AT25_AT25F512_SECTOR_SHIFT;
+        priv->nsectors    = AT25_AT25F512_NSECTORS;
+        priv->pageshift   = AT25_AT25F512_PAGE_SHIFT;
+        priv->npages      = AT25_AT25F512_NPAGES;
         return OK;
     }
 
